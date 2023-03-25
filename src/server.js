@@ -38,7 +38,6 @@ app.post('/books', (req, res) => {
             "updatedAt": new Date().toISOString()
         }
 
-        console.log(theBook);
         allBooks.push(theBook);
 
         res.status(201).json({ status: 'success', message: 'Buku berhasil ditambahkan', data: { bookId: theBook.id } });
@@ -48,35 +47,27 @@ app.post('/books', (req, res) => {
 
 app.get("/books", (req, res) => {
 
-    const { name, reading, finished } = req.params;
+    const { name, reading, finished } = req.query;
+
+    let books = allBooks;
 
     if (name) {
-
-        const getBooks = allBooks.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
-        res.status(200).json({ status: 'success', data: { books: getBooks } });
-
+        books = books.filter(book => book.name.toLowerCase().includes(name.toLowerCase()));
     }
 
-    if (reading) {
-
-        const getBooks = allBooks.filter((book) => book.reading === reading);
-        res.status(200).json({ status: 'success', data: { books: getBooks } });
-
+    if (reading !== undefined) {
+        const isReading = reading === '1';
+        books = books.filter(book => book.reading === isReading);
     }
 
-    if (finished) {
-
-        const getBooks = allBooks.filter((book) => book.finished === finished);
-        res.status(200).json({ status: 'success', data: { books: getBooks } });
-
+    if (finished !== undefined) {
+        const isFinished = finished === '1';
+        books = books.filter(book => book.finished === isFinished);
     }
 
-    if (!name && !reading && !finished) {
+    const getBooks = books.map(({ id, name, publisher }) => ({ id, name, publisher }));
+    res.status(200).json({ status: 'success', data: { books: getBooks } });
 
-        const getBooks = allBooks.map(({ id, name, publisher }) => ({ id, name, publisher }));
-        res.status(200).json({ status: 'success', data: { books: getBooks } });
-
-    }
 });
 
 app.get("/books/:id", (req, res) => {
