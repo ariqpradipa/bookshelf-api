@@ -24,6 +24,7 @@ app.post('/books', (req, res) => {
     } else {
 
         const theBook = {
+
             "id": nanoid(),
             "name": name,
             "year": year,
@@ -36,6 +37,7 @@ app.post('/books', (req, res) => {
             "reading": reading,
             "insertedAt": new Date().toISOString(),
             "updatedAt": new Date().toISOString()
+
         }
 
         allBooks.push(theBook);
@@ -52,17 +54,23 @@ app.get("/books", (req, res) => {
     let books = allBooks;
 
     if (name) {
+
         books = books.filter(book => book.name.toLowerCase().includes(name.toLowerCase()));
+
     }
 
     if (reading !== undefined) {
+
         const isReading = reading === '1';
         books = books.filter(book => book.reading === isReading);
+
     }
 
     if (finished !== undefined) {
+
         const isFinished = finished === '1';
         books = books.filter(book => book.finished === isFinished);
+
     }
 
     const getBooks = books.map(({ id, name, publisher }) => ({ id, name, publisher }));
@@ -146,8 +154,10 @@ app.delete("/books/:id", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
+
     console.error(err.stack);
     res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+
 });
 
 app.listen(port, () => {
