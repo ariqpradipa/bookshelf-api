@@ -48,10 +48,35 @@ app.post('/books', (req, res) => {
 
 app.get("/books", (req, res) => {
 
-    const getBooks = allBooks.map(({ id, name, publisher }) => ({ id, name, publisher }));
+    const { name, reading, finished } = req.params;
 
-    res.status(200).json({ status: 'success', data: { books: getBooks } });
+    if (name) {
 
+        const getBooks = allBooks.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
+        res.status(200).json({ status: 'success', data: { books: getBooks } });
+
+    }
+
+    if (reading) {
+
+        const getBooks = allBooks.filter((book) => book.reading === reading);
+        res.status(200).json({ status: 'success', data: { books: getBooks } });
+
+    }
+
+    if (finished) {
+
+        const getBooks = allBooks.filter((book) => book.finished === finished);
+        res.status(200).json({ status: 'success', data: { books: getBooks } });
+
+    }
+
+    if (!name && !reading && !finished) {
+
+        const getBooks = allBooks.map(({ id, name, publisher }) => ({ id, name, publisher }));
+        res.status(200).json({ status: 'success', data: { books: getBooks } });
+
+    }
 });
 
 app.get("/books/:id", (req, res) => {
@@ -109,6 +134,23 @@ app.put("/books/:id", (req, res) => {
             res.status(404).json({ status: 'fail', message: 'Gagal memperbarui buku. Id tidak ditemukan' });
 
         }
+    }
+});
+
+app.delete("/books/:id", (req, res) => {
+
+    const { id } = req.params;
+    const index = allBooks.findIndex((book) => book.id === id);
+
+    if (index !== -1) {
+
+        allBooks.splice(index, 1);
+        res.status(200).json({ status: 'success', message: 'Buku berhasil dihapus' });
+
+    } else {
+
+        res.status(404).json({ status: 'fail', message: 'Buku gagal dihapus. Id tidak ditemukan' });
+
     }
 });
 
