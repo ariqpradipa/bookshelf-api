@@ -70,6 +70,48 @@ app.get("/books/:id", (req, res) => {
     }
 });
 
+app.put("/books/:id", (req, res) => {
+
+    const { id } = req.params;
+    const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.body;
+
+    if (!name) {
+
+        res.status(400).json({ status: 'fail', message: 'Gagal memperbarui buku. Mohon isi nama buku' });
+
+    } else if (Number(readPage) > Number(pageCount)) {
+
+        res.status(400).json({ status: 'fail', message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount' });
+
+    } else {
+
+        const index = allBooks.findIndex((book) => book.id === id);
+
+        if (index !== -1) {
+
+            allBooks[index] = {
+                ...allBooks[index],
+                name,
+                year,
+                author,
+                summary,
+                publisher,
+                pageCount,
+                readPage,
+                reading,
+                updatedAt: new Date().toISOString()
+            };
+
+            res.status(200).json({ status: 'success', message: 'Buku berhasil diperbarui' });
+
+        } else {
+
+            res.status(404).json({ status: 'fail', message: 'Gagal memperbarui buku. Id tidak ditemukan' });
+
+        }
+    }
+});
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ status: 'error', message: 'Internal Server Error' });
